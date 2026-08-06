@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="popup.css">
+    <title>Cuenta de asistencia</title>
+  </head>
+  <body>
+    <main>
+      <h1>Asistencia Meet</h1>
+      <p id="message" role="status" aria-live="polite"></p>
+
+      <section class="server-settings" aria-label="Configuración del servidor">
+        <label for="server-url">URL del servidor</label>
+        <input id="server-url" type="url" placeholder="https://tu-app.onrender.com" spellcheck="false">
+        <button id="save-server" class="secondary" type="button">Guardar servidor</button>
+        <small>En local se usa http://localhost:3000. En Render pega la URL pública del servicio.</small>
+      </section>
+
+      <section id="signed-out">
+        <form id="login-form">
+          <h2>Iniciar sesión</h2>
+          <label>Correo <input name="email" type="email" autocomplete="email" required></label>
+          <label>Contraseña <input name="password" type="password" autocomplete="current-password" required></label>
+          <button type="submit">Entrar</button>
+        </form>
+        <button id="show-register" class="link-button" type="button">Crear una cuenta</button>
+
+        <form id="register-form" hidden>
+          <h2>Crear cuenta</h2>
+          <label>Nombre <input name="name" autocomplete="name" maxlength="120" required></label>
+          <label>Correo <input name="email" type="email" autocomplete="email" required></label>
+          <label>Contraseña <input name="password" type="password" minlength="8" autocomplete="new-password" required></label>
+          <button type="submit">Crear cuenta</button>
+          <button id="show-login" class="link-button" type="button">Ya tengo una cuenta</button>
+        </form>
+      </section>
+
+      <section id="signed-in" hidden>
+        <p>Sesión iniciada como</p>
+        <strong id="user-name"></strong>
+        <small id="user-email"></small>
+        <button id="logout" class="secondary" type="button">Cerrar sesión</button>
+      </section>
+    </main>
+    <script src="src/config.js"></script>
+    <script src="src/api.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>

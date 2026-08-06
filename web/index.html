@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#8F141B">
+    <title>Asistencia Meet</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <div id="toast" role="status" aria-live="polite"></div>
+
+    <section id="auth-shell" class="auth-shell">
+      <div class="auth-brand">
+        <div class="brand-mark">AM</div>
+        <p class="brand-kicker">SISTEMA DE ASISTENCIA</p>
+        <h1>Asistencia<br><em>Meet</em></h1>
+        <p>Control de asistencia organizado, confiable y conectado a tus clases.</p>
+        <div class="brand-rule"></div>
+        <small>Plataforma académica para tus clases</small>
+      </div>
+      <div class="auth-panel">
+        <div class="auth-panel-inner">
+          <p class="eyebrow">ACCESO DOCENTE</p>
+          <form id="login-form" class="auth-form">
+            <h2>Bienvenido</h2>
+            <p>Ingresa para gestionar la asistencia de tus clases.</p>
+            <label>Correo institucional
+              <input name="email" type="email" autocomplete="email" placeholder="nombre@correo.com" required>
+            </label>
+            <label>Contraseña
+              <span class="password-field"><input name="password" type="password" autocomplete="current-password" required><button class="password-toggle" type="button" aria-label="Mostrar contraseña">Mostrar</button></span>
+            </label>
+            <button class="button button-primary" type="submit">Iniciar sesión <span>→</span></button>
+            <button id="show-register" class="button-link" type="button">¿No tienes cuenta? <strong>Regístrate</strong></button>
+          </form>
+          <form id="register-form" class="auth-form" hidden>
+            <button id="show-login" class="back-button" type="button">← Volver a iniciar sesión</button>
+            <h2>Crea tu cuenta</h2>
+            <p>Registra tus datos para acceder al panel docente.</p>
+            <label>Nombre completo
+              <input name="name" maxlength="120" autocomplete="name" placeholder="Tu nombre" required>
+            </label>
+            <label>Correo institucional
+              <input name="email" type="email" autocomplete="email" placeholder="nombre@correo.com" required>
+            </label>
+            <label>Contraseña <small>Mínimo 8 caracteres</small>
+              <span class="password-field"><input name="password" type="password" minlength="8" autocomplete="new-password" required><button class="password-toggle" type="button" aria-label="Mostrar contraseña">Mostrar</button></span>
+            </label>
+            <button class="button button-primary" type="submit">Crear cuenta <span>→</span></button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section id="app-shell" class="app-shell" hidden>
+      <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Abrir menú" aria-expanded="false"><i></i><i></i><i></i></button>
+      <div id="menu-backdrop" class="menu-backdrop"></div>
+      <aside id="sidebar" class="sidebar">
+        <div class="sidebar-user"><span class="avatar" id="user-initial">U</span><div><strong id="sidebar-name"></strong><small>Docente</small></div></div>
+        <nav>
+          <button class="nav-link active" data-view="meet" type="button"><span>⌂</span> Meet en vivo</button>
+          <button class="nav-link" data-view="classes" type="button"><span>▣</span> Mis clases</button>
+          <button class="nav-link" data-view="students" type="button"><span>♙</span> Estudiantes</button>
+        </nav>
+        <button id="logout-button" class="sidebar-logout" type="button">Cerrar sesión</button>
+        <div class="sidebar-footer"><span class="status-dot"></span> Sistema de asistencia</div>
+      </aside>
+
+      <main class="main-content">
+        <section id="view-meet" class="view active-view">
+          <div class="page-heading meet-heading">
+            <div><p class="eyebrow">PANEL PRINCIPAL</p><h1>Meet en vivo</h1><p>Inicia una sesión desde Google Meet o crea una sesión de prueba.</p></div>
+            <a class="button button-outline" href="https://meet.google.com/" target="_blank" rel="noreferrer">Abrir Google Meet ↗</a>
+          </div>
+          <section class="quick-grid">
+            <article class="quick-card active-card"><span class="card-icon">◉</span><div><small>ESTADO ACTUAL</small><strong id="current-status">Sin clase activa</strong><p id="current-status-detail">Inicia asistencia desde la extensión.</p></div></article>
+            <article class="quick-card"><span class="card-icon ochre">♙</span><div><small>ASISTENCIA</small><strong id="metric-attended">0 / 0</strong><p>Estudiantes presentes</p></div></article>
+            <article class="quick-card"><span class="card-icon gray">!</span><div><small>POR REVISAR</small><strong id="metric-unmatched">0</strong><p>Nombres no encontrados</p></div></article>
+          </section>
+          <section class="panel start-panel">
+            <div><p class="eyebrow">SESIÓN MANUAL</p><h2>Crear una clase de prueba</h2><p>Para asistencia real, usa el botón <b>Iniciar asistencia</b> dentro de Google Meet.</p></div>
+            <form id="start-class-form" class="start-form">
+              <label>Clase<select name="courseId" id="start-course-select" required></select></label>
+              <label>Código de Meet<input name="meetCode" maxlength="100" placeholder="abc-defg-hij" required></label>
+              <button class="button button-primary" type="submit">Iniciar clase</button>
+            </form>
+          </section>
+          <section id="session-panel" class="panel session-panel" hidden>
+            <div class="session-title-row">
+              <div><p id="session-state" class="live-label"></p><h2 id="session-name">—</h2><p id="session-meta" class="muted"></p></div>
+              <div class="session-controls"><select id="class-select" aria-label="Seleccionar clase"></select><button id="download-pdf" class="button button-outline small-button" type="button">PDF</button><button id="download-csv" class="button button-outline small-button" type="button">Excel</button><button id="finish-button" class="button button-danger small-button" type="button">Finalizar</button></div>
+            </div>
+            <div class="session-summary"><span><b id="summary-registered">0</b> registrados</span><span><b id="summary-attended">0</b> asistieron</span><span><b id="summary-absent">0</b> ausentes</span><span><b id="summary-connected">0</b> conectados ahora</span></div>
+            <div class="table-heading"><div><h3>Asistencia oficial</h3><p>Estudiantes del padrón institucional</p></div><div class="table-heading-actions"><span id="official-count" class="table-count">0 registros</span><button id="official-toggle" class="section-toggle" type="button" aria-expanded="false" aria-controls="official-table-wrap"><span id="official-toggle-label">Ver estudiantes</span><b aria-hidden="true">▾</b></button></div></div>
+            <div id="official-table-wrap" class="table-wrap" hidden><table class="attendance-table"><thead><tr><th>Código</th><th>Estudiante</th><th>Asistió</th><th>Entrada</th><th>Salida</th><th>Duración</th><th>Conexiones</th></tr></thead><tbody id="attendance-body"></tbody></table></div>
+            <section id="unmatched-panel" class="unmatched-panel" hidden>
+              <div class="table-heading"><div><h3>Participantes no encontrados</h3><p>Se muestran por separado para evitar coincidencias erróneas.</p></div><div class="table-heading-actions"><span id="unmatched-count" class="table-count warning">0 registros</span><button id="unmatched-toggle" class="section-toggle" type="button" aria-expanded="false" aria-controls="unmatched-table-wrap"><span id="unmatched-toggle-label">Ver registros</span><b aria-hidden="true">▾</b></button></div></div>
+              <div id="unmatched-table-wrap" class="table-wrap" hidden><table class="attendance-table"><thead><tr><th>Nombre en Meet</th><th>Asistió</th><th>Entrada</th><th>Salida</th><th>Duración</th><th>Conexiones</th></tr></thead><tbody id="unmatched-body"></tbody></table></div>
+            </section>
+          </section>
+          <section id="empty-session" class="empty-state"><span>◌</span><h2>Aún no hay una clase para mostrar</h2><p>Al iniciar asistencia desde Meet, aquí aparecerá la tabla organizada con todos los estudiantes.</p></section>
+        </section>
+
+        <section id="view-classes" class="view" hidden>
+          <div class="page-heading"><div><p class="eyebrow">GESTIÓN ACADÉMICA</p><h1>Mis clases</h1><p>Agrega una clase con su código y el Excel de estudiantes.</p></div><button id="add-course-button" class="button button-primary" type="button">+ Agregar clase</button></div>
+          <div id="classes-history" class="classes-history"></div>
+        </section>
+
+        <section id="view-students" class="view" hidden>
+          <div class="page-heading"><div><p class="eyebrow">PADRÓN OFICIAL</p><h1>Estudiantes</h1><p id="roster-description">Selecciona una clase para consultar su listado.</p></div><div class="heading-actions"><select id="students-course-select" class="course-select" aria-label="Seleccionar clase"></select><button id="add-student-button" class="button button-primary" type="button">+ Agregar estudiante</button></div></div>
+          <section class="panel roster-panel"><div class="table-wrap"><table class="attendance-table roster-table"><thead><tr><th>Código</th><th>Estudiante</th><th>Programa</th><th>Correo institucional</th><th>Acciones</th></tr></thead><tbody id="students-body"></tbody></table></div></section>
+        </section>
+      </main>
+    </section>
+    <section id="course-modal" class="modal" hidden aria-modal="true" role="dialog" aria-labelledby="course-modal-title">
+      <div class="modal-backdrop" data-close-modal></div>
+      <form id="course-form" class="modal-card">
+        <button class="modal-close" type="button" data-close-modal aria-label="Cerrar">×</button>
+        <p class="eyebrow">NUEVA CLASE</p><h2 id="course-modal-title">Agregar clase</h2>
+        <p>Registra el nombre, el ID de la clase y el Excel con su padrón de estudiantes.</p>
+        <label>Nombre de la clase<input name="name" maxlength="150" placeholder="Ej. Inglés II - Grupo A" required></label>
+        <label>ID de la clase<input name="courseCode" maxlength="100" placeholder="Ej. ING-II-2026-A" required></label>
+        <label id="workbook-field">Excel de estudiantes <small>Archivo .xlsx con una columna Nombre</small><input name="workbook" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required></label>
+        <button id="course-submit" class="button button-primary" type="submit">Guardar clase y estudiantes</button>
+      </form>
+    </section>
+    <section id="student-modal" class="modal" hidden aria-modal="true" role="dialog" aria-labelledby="student-modal-title">
+      <div class="modal-backdrop" data-close-student-modal></div>
+      <form id="student-form" class="modal-card">
+        <button class="modal-close" type="button" data-close-student-modal aria-label="Cerrar">×</button>
+        <p class="eyebrow">PADRÓN DE LA CLASE</p><h2 id="student-modal-title">Agregar estudiante</h2>
+        <label>Código <input name="studentCode" maxlength="32" placeholder="Opcional"></label>
+        <label>Nombre completo<input name="fullName" maxlength="255" required></label>
+        <label>Programa<input name="program" maxlength="255" placeholder="Opcional"></label>
+        <label>Correo institucional<input name="institutionalEmail" maxlength="254" type="email" placeholder="Opcional"></label>
+        <button id="student-submit" class="button button-primary" type="submit">Guardar estudiante</button>
+      </form>
+    </section>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/app.js"></script>
+  </body>
+</html>

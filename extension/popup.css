@@ -1,0 +1,17 @@
+body { font: 14px/1.4 Arial, sans-serif; margin: 0; min-width: 280px; color: #202124; }
+main { padding: 18px; }
+h1 { font-size: 18px; margin: 0 0 8px; }
+h2 { font-size: 15px; margin: 12px 0 8px; }
+form, label { display: grid; gap: 7px; }
+form { margin-top: 10px; }
+input { border: 1px solid #c4c7c5; border-radius: 5px; padding: 8px; }
+button { background: #1a73e8; border: 0; border-radius: 5px; color: #fff; cursor: pointer; font-weight: 600; margin-top: 5px; padding: 9px; }
+button.secondary { background: #5f6368; width: 100%; }
+button.link-button { background: transparent; color: #1a73e8; padding-left: 0; text-align: left; }
+#message { color: #137333; min-height: 20px; margin: 0; }
+#message.error { color: #b3261e; }
+#signed-in small { color: #5f6368; display: block; margin: 3px 0 16px; }
+.server-settings { border-bottom: 1px solid #dadce0; display: grid; gap: 7px; margin: 10px 0 14px; padding-bottom: 14px; }
+.server-settings label { font-weight: 600; }
+.server-settings small { color: #5f6368; }
+.server-settings button { margin-top: 0; }

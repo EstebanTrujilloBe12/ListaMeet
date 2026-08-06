@@ -1,0 +1,47 @@
+#meet-attendance-control {
+  align-items: center;
+  background: #fff;
+  border: 1px solid #dadce0;
+  border-radius: 24px;
+  bottom: 20px;
+  box-shadow: 0 2px 8px rgba(60, 64, 67, .25);
+  display: flex;
+  font: 14px/1.2 Arial, sans-serif;
+  gap: 10px;
+  padding: 8px 12px;
+  position: fixed;
+  right: 20px;
+  z-index: 2147483647;
+}
+
+#meet-attendance-control.is-selecting { align-items: flex-start; border-radius: 16px; flex-wrap: wrap; max-width: min(390px, calc(100vw - 32px)); }
+
+#meet-attendance-toggle {
+  background: #1a73e8;
+  border: 0;
+  border-radius: 18px;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  padding: 9px 14px;
+}
+
+#meet-attendance-toggle:disabled { cursor: wait; opacity: .65; }
+
+#meet-attendance-status { color: #3c4043; max-width: 170px; }
+#meet-attendance-status.is-error { color: #b3261e; }
+
+#meet-course-picker { border-top: 1px solid #e8eaed; margin-top: 4px; padding: 12px 2px 2px; width: 100%; }
+.meet-picker-heading { align-items: flex-start; display: flex; gap: 12px; justify-content: space-between; margin: 0 4px 10px; }
+.meet-picker-heading strong,.meet-picker-heading span { display: block; }
+.meet-picker-heading strong { color: #202124; font-size: 14px; }
+.meet-picker-heading span { color: #5f6368; font-size: 12px; line-height: 1.35; margin-top: 3px; }
+#meet-course-picker-close { background: transparent; border: 0; border-radius: 50%; color: #5f6368; cursor: pointer; font-size: 22px; height: 30px; line-height: 1; padding: 0; width: 30px; }
+#meet-course-picker-close:hover { background: #f1f3f4; }
+.meet-course-list { display: grid; gap: 7px; max-height: 260px; overflow: auto; padding: 2px; }
+.meet-course-option { background: #fff; border: 1px solid #dadce0; border-radius: 10px; color: #202124; cursor: pointer; padding: 11px 12px; text-align: left; transition: background .16s ease,border-color .16s ease,transform .16s ease; width: 100%; }
+.meet-course-option:hover,.meet-course-option:focus { background: #f1f6fe; border-color: #1a73e8; outline: 0; transform: translateY(-1px); }
+.meet-course-option strong,.meet-course-option span { display: block; }
+.meet-course-option strong { font: 600 13px/1.3 Arial,sans-serif; }
+.meet-course-option span { color: #5f6368; font: 12px/1.3 Arial,sans-serif; margin-top: 3px; }

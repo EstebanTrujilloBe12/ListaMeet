@@ -1,0 +1,25 @@
+{
+  "name": "asistencia-google-meet",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Registro de asistencia para Google Meet con extensión Chrome, API Express y panel web.",
+  "scripts": {
+    "dev": "node --watch server/src/server.js",
+    "start": "node server/src/server.js",
+    "check": "node --check server/src/server.js && node --check server/src/config.js && node --check server/src/db.js && node --check extension/src/api.js && node --check extension/src/content.js && node --check extension/popup.js && node --check web/app.js"
+  },
+  "engines": {
+    "node": ">=20 <25"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^5.1.0",
+    "fflate": "^0.8.2",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.14.3",
+    "pdfkit": "^0.17.2",
+    "socket.io": "^4.8.1"
+  }
+}
