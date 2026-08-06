@@ -11,7 +11,7 @@ button.link-button { background: transparent; color: #1a73e8; padding-left: 0; t
 #message { color: #137333; min-height: 20px; margin: 0; }
 #message.error { color: #b3261e; }
 #signed-in small { color: #5f6368; display: block; margin: 3px 0 16px; }
-.server-settings { border-bottom: 1px solid #dadce0; display: grid; gap: 7px; margin: 10px 0 14px; padding-bottom: 14px; }
+.server-settings { display: none; }
 .server-settings label { font-weight: 600; }
 .server-settings small { color: #5f6368; }
 .server-settings button { margin-top: 0; }

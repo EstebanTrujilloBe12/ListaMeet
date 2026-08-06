@@ -10,9 +10,7 @@
     showLogin: document.querySelector("#show-login"),
     name: document.querySelector("#user-name"),
     email: document.querySelector("#user-email"),
-    logout: document.querySelector("#logout"),
-    serverUrl: document.querySelector("#server-url"),
-    saveServer: document.querySelector("#save-server")
+    logout: document.querySelector("#logout")
   };
 
   function message(text, isError = false) {
@@ -55,20 +53,5 @@
     message("Sesión cerrada.");
   });
 
-  ui.saveServer.addEventListener("click", async () => {
-    try {
-      const baseUrl = await api.setBaseUrl(ui.serverUrl.value);
-      ui.serverUrl.value = baseUrl.replace(/\/api$/, "");
-      await api.clearToken();
-      ui.signedIn.hidden = true;
-      ui.signedOut.hidden = false;
-      message("Servidor actualizado. Inicia sesion de nuevo.");
-    } catch (error) { message(error.message || "No fue posible guardar el servidor", true); }
-  });
-
-  api.getBaseUrl()
-    .then((baseUrl) => { ui.serverUrl.value = baseUrl.replace(/\/api$/, ""); })
-    .then(() => api.me())
-    .then(({ user }) => renderUser(user))
-    .catch(() => api.clearToken());
+  api.me().then(({ user }) => renderUser(user)).catch(() => api.clearToken());
 })();

@@ -21,10 +21,7 @@ class AttendanceApi {
   }
 
   async getBaseUrl() {
-    const stored = await chrome.storage.local.get(this.baseUrlStorageKey);
-    return stored[this.baseUrlStorageKey]
-      ? this.normalizeBaseUrl(stored[this.baseUrlStorageKey])
-      : this.defaultBaseUrl;
+    return this.defaultBaseUrl;
   }
 
   async setBaseUrl(value) {

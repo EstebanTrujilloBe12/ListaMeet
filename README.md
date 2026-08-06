@@ -13,7 +13,7 @@ El repositorio incluye `render.yaml`: al conectarlo como **Blueprint** en Render
 3. En Render, selecciona **New > Blueprint**, conecta el repositorio y acepta `render.yaml`.
 4. Render pedira `MYSQL_HOST`, `MYSQL_DATABASE`, `MYSQL_USER` y `MYSQL_PASSWORD`. Completa los valores de tu base. Si el proveedor no usa TLS, cambia `MYSQL_SSL` a `false`; en proveedores administrados normalmente debe quedar en `true`.
 5. Al finalizar, abre `https://TU-SERVICIO.onrender.com/health`. Debe responder `{ "ok": true }`. Esa misma URL abre el panel.
-6. Recarga la extension en `chrome://extensions`, abre su icono y pega la URL publica de Render en **URL del servidor**. El campo guarda la configuracion y no exige editar codigo ni conocer el ID de Chrome.
+6. Recarga la extension en `chrome://extensions`. Se conecta automaticamente al servidor de Render y solo pide iniciar sesion.
 
 El plan gratuito de Render arranca el servidor automaticamente en cada despliegue y al recibir la primera solicitud, pero lo suspende tras 15 minutos sin trafico. La primera visita posterior puede tardar alrededor de un minuto; para disponibilidad continua se necesita un plan de pago. La base de datos no se guarda en el disco temporal del servidor.
 
@@ -37,7 +37,7 @@ asistencia-google-meet/
 5. Ejecuta `npm install` y después `npm run dev`.
 6. Abre `http://localhost:3000` y crea una cuenta de profesor con nombre, correo y contraseña.
 7. En Chrome, abre `chrome://extensions`, activa el modo desarrollador y usa **Cargar descomprimida** seleccionando la carpeta `extension`.
-8. Desde el icono de la extension, crea o inicia sesion con la misma cuenta. Si el servidor no esta en el equipo local, pega su URL HTTPS en **URL del servidor** dentro de la extension.
+8. Desde el icono de la extension, crea o inicia sesion con la misma cuenta. La extension se conecta automaticamente al servidor configurado.
 
 ## Uso
 
