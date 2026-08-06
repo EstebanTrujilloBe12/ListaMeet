@@ -15,10 +15,6 @@ CREATE TABLE IF NOT EXISTS users (
   UNIQUE KEY uq_users_email (email)
 ) ENGINE=InnoDB;
 
--- Tambien se aplica a instalaciones creadas antes del panel administrador.
-ALTER TABLE users
-  ADD COLUMN IF NOT EXISTS role ENUM('teacher', 'admin') NOT NULL DEFAULT 'teacher' AFTER password_hash;
-
 CREATE TABLE IF NOT EXISTS courses (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   teacher_id CHAR(36) NOT NULL,

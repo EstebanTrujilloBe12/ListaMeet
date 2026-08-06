@@ -15,6 +15,13 @@ const pool = mysql.createPool({
 
 let schemaInitialization;
 
+async function ensureUserRoleColumn() {
+  const [columns] = await pool.query("SHOW COLUMNS FROM users LIKE 'role'");
+  if (!columns.length) {
+    await pool.query("ALTER TABLE users ADD COLUMN role ENUM('teacher', 'admin') NOT NULL DEFAULT 'teacher' AFTER password_hash");
+  }
+}
+
 async function initializeDatabase() {
   if (!schemaInitialization) {
     schemaInitialization = fs.readFile(path.join(__dirname, "schema.sql"), "utf8")
@@ -22,6 +29,7 @@ async function initializeDatabase() {
         .replace(/^CREATE DATABASE IF NOT EXISTS[\s\S]*?;\s*/mi, "")
         .replace(/^USE\s+[^;]+;\s*/mi, ""))
       .then((schema) => pool.query(schema))
+      .then(() => ensureUserRoleColumn())
       .catch((error) => {
         schemaInitialization = undefined;
         throw error;
