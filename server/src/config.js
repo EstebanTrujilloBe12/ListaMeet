@@ -27,7 +27,12 @@ const config = {
     ssl: mysqlSsl ? { rejectUnauthorized: process.env.MYSQL_SSL_REJECT_UNAUTHORIZED !== "false" } : undefined
   },
   jwtSecret: required("JWT_SECRET"),
-  corsOrigins: origins()
+  corsOrigins: origins(),
+  initialAdmin: {
+    name: process.env.ADMIN_NAME?.trim(),
+    email: process.env.ADMIN_EMAIL?.trim(),
+    password: process.env.ADMIN_PASSWORD
+  }
 };
 
 module.exports = { config };

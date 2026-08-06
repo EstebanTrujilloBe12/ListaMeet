@@ -9,6 +9,8 @@
     courses: [],
     students: [],
     studentsCourseId: null,
+    adminUsers: [],
+    adminPasswordUser: null,
     editingCourseId: null,
     editingStudentId: null,
     attendanceExpanded: false,
@@ -20,12 +22,13 @@
   const ui = {
     toast: document.querySelector("#toast"), auth: document.querySelector("#auth-shell"), app: document.querySelector("#app-shell"),
     login: document.querySelector("#login-form"), register: document.querySelector("#register-form"), showRegister: document.querySelector("#show-register"), showLogin: document.querySelector("#show-login"),
-    sidebarName: document.querySelector("#sidebar-name"), userInitial: document.querySelector("#user-initial"), logout: document.querySelector("#logout-button"), menuToggle: document.querySelector("#menu-toggle"), backdrop: document.querySelector("#menu-backdrop"),
+    sidebarName: document.querySelector("#sidebar-name"), sidebarRole: document.querySelector("#sidebar-role"), userInitial: document.querySelector("#user-initial"), logout: document.querySelector("#logout-button"), menuToggle: document.querySelector("#menu-toggle"), backdrop: document.querySelector("#menu-backdrop"), adminNav: document.querySelector("#admin-nav"),
     currentStatus: document.querySelector("#current-status"), currentStatusDetail: document.querySelector("#current-status-detail"), metricAttended: document.querySelector("#metric-attended"), metricUnmatched: document.querySelector("#metric-unmatched"),
     startClass: document.querySelector("#start-class-form"), startCourseSelect: document.querySelector("#start-course-select"),
     sessionPanel: document.querySelector("#session-panel"), emptySession: document.querySelector("#empty-session"), classSelect: document.querySelector("#class-select"), sessionState: document.querySelector("#session-state"), sessionName: document.querySelector("#session-name"), sessionMeta: document.querySelector("#session-meta"), finish: document.querySelector("#finish-button"), pdf: document.querySelector("#download-pdf"), csv: document.querySelector("#download-csv"),
     registered: document.querySelector("#summary-registered"), attended: document.querySelector("#summary-attended"), absent: document.querySelector("#summary-absent"), connected: document.querySelector("#summary-connected"), officialCount: document.querySelector("#official-count"), officialToggle: document.querySelector("#official-toggle"), officialToggleLabel: document.querySelector("#official-toggle-label"), officialTable: document.querySelector("#official-table-wrap"), attendanceBody: document.querySelector("#attendance-body"), unmatchedPanel: document.querySelector("#unmatched-panel"), unmatchedCount: document.querySelector("#unmatched-count"), unmatchedToggle: document.querySelector("#unmatched-toggle"), unmatchedToggleLabel: document.querySelector("#unmatched-toggle-label"), unmatchedTable: document.querySelector("#unmatched-table-wrap"), unmatchedBody: document.querySelector("#unmatched-body"),
     history: document.querySelector("#classes-history"), studentsBody: document.querySelector("#students-body"), rosterDescription: document.querySelector("#roster-description"), studentsCourseSelect: document.querySelector("#students-course-select"),
+    adminRefresh: document.querySelector("#admin-refresh"), adminUserCount: document.querySelector("#admin-user-count"), adminUsersBody: document.querySelector("#admin-users-body"), adminActivity: document.querySelector("#admin-activity"), adminActivityTitle: document.querySelector("#admin-activity-title"), adminActivityDescription: document.querySelector("#admin-activity-description"), adminActivityBody: document.querySelector("#admin-activity-body"), adminCloseActivity: document.querySelector("#admin-close-activity"), adminPasswordModal: document.querySelector("#admin-password-modal"), adminPasswordForm: document.querySelector("#admin-password-form"), adminPasswordDescription: document.querySelector("#admin-password-description"),
     addCourse: document.querySelector("#add-course-button"), courseModal: document.querySelector("#course-modal"), courseForm: document.querySelector("#course-form"), courseTitle: document.querySelector("#course-modal-title"), courseSubmit: document.querySelector("#course-submit"), workbookField: document.querySelector("#workbook-field"),
     addStudent: document.querySelector("#add-student-button"), studentModal: document.querySelector("#student-modal"), studentForm: document.querySelector("#student-form"), studentTitle: document.querySelector("#student-modal-title"), studentSubmit: document.querySelector("#student-submit")
   };
@@ -99,6 +102,7 @@
   }
 
   function setView(view) {
+    if (view === "admin" && state.user?.role !== "admin") view = "meet";
     let visibleView = null;
     document.querySelectorAll(".view").forEach((element) => {
       const active = element.id === `view-${view}`;
@@ -116,11 +120,14 @@
     ui.menuToggle.setAttribute("aria-expanded", "false");
     if (view === "classes") renderHistory();
     if (view === "students") loadStudents().catch((error) => notify(error.message, true));
+    if (view === "admin") loadAdminUsers().catch((error) => notify(error.message, true));
   }
   function showAuthenticated(user) {
     state.user = user;
     ui.sidebarName.textContent = user.name;
+    ui.sidebarRole.textContent = user.role === "admin" ? "Administrador" : "Docente";
     ui.userInitial.textContent = initials(user.name);
+    ui.adminNav.hidden = user.role !== "admin";
     const openApp = () => {
       ui.auth.hidden = true;
       ui.auth.classList.remove("scene-out");
@@ -147,6 +154,10 @@
     state.courses = [];
     state.students = [];
     state.studentsCourseId = null;
+    state.adminUsers = [];
+    state.adminPasswordUser = null;
+    ui.adminNav.hidden = true;
+    ui.adminActivity.hidden = true;
     localStorage.removeItem(storageKey);
     ui.app.hidden = true;
     ui.auth.hidden = false;
@@ -448,6 +459,99 @@
       notify(error.message, true);
     }
   }
+  function roleBadge(role) {
+    const badge = document.createElement("span");
+    badge.className = `badge ${role === "admin" ? "online" : "absent"}`;
+    badge.textContent = role === "admin" ? "Administrador" : "Docente";
+    return badge;
+  }
+  function renderAdminUsers() {
+    ui.adminUserCount.textContent = String(state.adminUsers.length);
+    ui.adminUsersBody.replaceChildren(...state.adminUsers.map((user) => {
+      const tr = document.createElement("tr");
+      const account = document.createElement("div");
+      account.className = "student-cell";
+      const name = document.createElement("strong");
+      name.textContent = user.name;
+      const joined = document.createElement("small");
+      joined.textContent = `Registrado: ${formatDate(user.createdAt)}`;
+      account.append(name, joined);
+      const actions = document.createElement("div");
+      actions.className = "admin-row-actions";
+      actions.append(
+        actionButton("Ver actividad", "row-action", () => loadAdminActivity(user)),
+        actionButton("Cambiar contrasena", "row-action", () => openAdminPasswordModal(user))
+      );
+      tr.append(
+        makeCell(account),
+        makeCell(user.email),
+        makeCell(roleBadge(user.role)),
+        makeCell(String(user.courseCount)),
+        makeCell(String(user.sessionCount)),
+        makeCell(formatDate(user.lastActivityAt), "time-cell"),
+        makeCell(actions)
+      );
+      return tr;
+    }));
+  }
+  async function loadAdminUsers() {
+    const { users } = await api("/admin/users");
+    state.adminUsers = users;
+    renderAdminUsers();
+  }
+  async function loadAdminActivity(user) {
+    try {
+      const { user: account, sessions } = await api(`/admin/users/${encodeURIComponent(user.id)}/activity`);
+      ui.adminActivity.hidden = false;
+      ui.adminActivityTitle.textContent = `Actividad de ${account.name}`;
+      ui.adminActivityDescription.textContent = `${account.email} - ${sessions.length} sesiones registradas.`;
+      if (!sessions.length) {
+        const tr = document.createElement("tr");
+        const cell = makeCell("Esta cuenta todavia no ha registrado clases.");
+        cell.colSpan = 6;
+        tr.append(cell);
+        ui.adminActivityBody.replaceChildren(tr);
+      } else {
+        ui.adminActivityBody.replaceChildren(...sessions.map((session) => {
+          const tr = document.createElement("tr");
+          const course = document.createElement("div");
+          course.className = "student-cell";
+          const courseName = document.createElement("strong");
+          courseName.textContent = session.courseName;
+          const courseCode = document.createElement("small");
+          courseCode.textContent = session.courseCode;
+          course.append(courseName, courseCode);
+          const status = document.createElement("span");
+          status.className = `badge ${session.status === "active" ? "present" : "absent"}`;
+          status.textContent = session.status === "active" ? "Activa" : "Finalizada";
+          tr.append(
+            makeCell(course),
+            makeCell(session.meetCode, "code-cell"),
+            makeCell(status),
+            makeCell(formatDate(session.startedAt), "time-cell"),
+            makeCell(formatDate(session.endedAt), "time-cell"),
+            makeCell(`${session.attended} / ${session.registered}${session.unmatched ? ` + ${session.unmatched} sin identificar` : ""}`)
+          );
+          return tr;
+        }));
+      }
+      ui.adminActivity.scrollIntoView({ behavior: "smooth", block: "start" });
+    } catch (error) {
+      notify(error.message, true);
+    }
+  }
+  function openAdminPasswordModal(user) {
+    state.adminPasswordUser = user;
+    ui.adminPasswordForm.reset();
+    ui.adminPasswordDescription.textContent = `Define una contrasena nueva para ${user.name} (${user.email}). La contrasena actual no se puede consultar.`;
+    ui.adminPasswordModal.hidden = false;
+    ui.adminPasswordForm.elements.password.focus();
+  }
+  function closeAdminPasswordModal() {
+    state.adminPasswordUser = null;
+    ui.adminPasswordForm.reset();
+    ui.adminPasswordModal.hidden = true;
+  }
   function connectSocket() {
     state.socket?.disconnect();
     state.socket = io({ auth: { token: state.token } });
@@ -500,6 +604,8 @@
   });
   ui.backdrop.addEventListener("click", () => ui.app.classList.remove("menu-open"));
   document.querySelectorAll(".nav-link").forEach((button) => button.addEventListener("click", () => setView(button.dataset.view)));
+  ui.adminRefresh.addEventListener("click", () => loadAdminUsers().then(() => notify("Cuentas actualizadas.")).catch((error) => notify(error.message, true)));
+  ui.adminCloseActivity.addEventListener("click", () => { ui.adminActivity.hidden = true; });
   document.querySelectorAll("[data-view-link]").forEach((link) => link.addEventListener("click", (event) => {
     event.preventDefault();
     setView(link.dataset.viewLink);
@@ -537,6 +643,25 @@
   ui.addCourse.addEventListener("click", () => openCourseModal());
   document.querySelectorAll("[data-close-modal]").forEach((button) => button.addEventListener("click", closeCourseModal));
   document.querySelectorAll("[data-close-student-modal]").forEach((button) => button.addEventListener("click", closeStudentModal));
+  document.querySelectorAll("[data-close-admin-password-modal]").forEach((button) => button.addEventListener("click", closeAdminPasswordModal));
+  ui.adminPasswordForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (!state.adminPasswordUser) return;
+    const { password, confirmation } = Object.fromEntries(new FormData(ui.adminPasswordForm));
+    if (password !== confirmation) return notify("Las contrasenas no coinciden.", true);
+    try {
+      await api(`/admin/users/${encodeURIComponent(state.adminPasswordUser.id)}/password`, {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ password })
+      });
+      const name = state.adminPasswordUser.name;
+      closeAdminPasswordModal();
+      notify(`Contrasena actualizada para ${name}.`);
+    } catch (error) {
+      notify(error.message, true);
+    }
+  });
   ui.courseForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     const form = new FormData(ui.courseForm);

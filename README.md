@@ -11,9 +11,10 @@ El repositorio incluye `render.yaml`: al conectarlo como **Blueprint** en Render
 1. Crea una base de datos **MySQL** administrada y guarda `host`, `puerto`, `base`, `usuario` y `contrasena`. Render ofrece PostgreSQL administrado, pero esta aplicacion usa MySQL, por lo que la base debe ser de un proveedor MySQL externo o una que ya tengas. La base debe existir; las tablas las crea la aplicacion.
 2. Sube esta carpeta a un repositorio de GitHub. No publiques `.env`: ya esta excluido por `.gitignore`.
 3. En Render, selecciona **New > Blueprint**, conecta el repositorio y acepta `render.yaml`.
-4. Render pedira `MYSQL_HOST`, `MYSQL_DATABASE`, `MYSQL_USER` y `MYSQL_PASSWORD`. Completa los valores de tu base. Si el proveedor no usa TLS, cambia `MYSQL_SSL` a `false`; en proveedores administrados normalmente debe quedar en `true`.
-5. Al finalizar, abre `https://TU-SERVICIO.onrender.com/health`. Debe responder `{ "ok": true }`. Esa misma URL abre el panel.
-6. Recarga la extension en `chrome://extensions`. Se conecta automaticamente al servidor de Render y solo pide iniciar sesion.
+4. Render pedira `MYSQL_HOST`, `MYSQL_DATABASE`, `MYSQL_USER` y `MYSQL_PASSWORD`. Completa los valores de tu base. Para Aiven deja `MYSQL_SSL=true` y usa `MYSQL_SSL_REJECT_UNAUTHORIZED=false`, porque Aiven entrega su propio certificado.
+5. En las variables privadas agrega `ADMIN_NAME`, `ADMIN_EMAIL` y `ADMIN_PASSWORD`. En el primer inicio se crea esa cuenta como **Administrador**. El administrador puede ver las cuentas registradas, sus correos, clases y sesiones, y restablecer contrasenas. Las contrasenas existentes no se pueden ver: se almacenan como hashes seguros.
+6. Al finalizar, abre `https://TU-SERVICIO.onrender.com/health`. Debe responder `{ "ok": true }`. Esa misma URL abre el panel.
+7. Recarga la extension en `chrome://extensions`. Se conecta automaticamente al servidor de Render y solo pide iniciar sesion.
 
 El plan gratuito de Render arranca el servidor automaticamente en cada despliegue y al recibir la primera solicitud, pero lo suspende tras 15 minutos sin trafico. La primera visita posterior puede tardar alrededor de un minuto; para disponibilidad continua se necesita un plan de pago. La base de datos no se guarda en el disco temporal del servidor.
 
@@ -61,6 +62,9 @@ Las rutas de asistencia requieren `Authorization: Bearer <sesión>`; la sesión 
 | `POST` | `/api/auth/register` | Crea una cuenta de profesor. |
 | `POST` | `/api/auth/login` | Inicia sesión. |
 | `GET` | `/api/auth/me` | Devuelve el profesor autenticado. |
+| `GET` | `/api/admin/users` | Solo administrador: lista cuentas y resumen de actividad. |
+| `GET` | `/api/admin/users/:id/activity` | Solo administrador: consulta clases y sesiones de una cuenta. |
+| `PATCH` | `/api/admin/users/:id/password` | Solo administrador: restablece una contrasena. |
 | `POST` | `/api/classes/start` | Crea una sesión de clase. |
 | `GET` | `/api/courses` | Lista las clases y su número de estudiantes. |
 | `POST` | `/api/courses` | Crea una clase con los encabezados `x-course-name`, `x-course-code` y un Excel `.xlsx` como cuerpo. |

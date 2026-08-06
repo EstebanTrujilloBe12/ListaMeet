@@ -57,11 +57,12 @@
       <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Abrir menú" aria-expanded="false"><i></i><i></i><i></i></button>
       <div id="menu-backdrop" class="menu-backdrop"></div>
       <aside id="sidebar" class="sidebar">
-        <div class="sidebar-user"><span class="avatar" id="user-initial">U</span><div><strong id="sidebar-name"></strong><small>Docente</small></div></div>
+        <div class="sidebar-user"><span class="avatar" id="user-initial">U</span><div><strong id="sidebar-name"></strong><small id="sidebar-role">Docente</small></div></div>
         <nav>
           <button class="nav-link active" data-view="meet" type="button"><span>⌂</span> Meet en vivo</button>
           <button class="nav-link" data-view="classes" type="button"><span>▣</span> Mis clases</button>
           <button class="nav-link" data-view="students" type="button"><span>♙</span> Estudiantes</button>
+          <button id="admin-nav" class="nav-link" data-view="admin" type="button" hidden><span>Admin</span> Administracion</button>
         </nav>
         <button id="logout-button" class="sidebar-logout" type="button">Cerrar sesión</button>
         <div class="sidebar-footer"><span class="status-dot"></span> Sistema de asistencia</div>
@@ -111,6 +112,18 @@
           <div class="page-heading"><div><p class="eyebrow">PADRÓN OFICIAL</p><h1>Estudiantes</h1><p id="roster-description">Selecciona una clase para consultar su listado.</p></div><div class="heading-actions"><select id="students-course-select" class="course-select" aria-label="Seleccionar clase"></select><button id="add-student-button" class="button button-primary" type="button">+ Agregar estudiante</button></div></div>
           <section class="panel roster-panel"><div class="table-wrap"><table class="attendance-table roster-table"><thead><tr><th>Código</th><th>Estudiante</th><th>Programa</th><th>Correo institucional</th><th>Acciones</th></tr></thead><tbody id="students-body"></tbody></table></div></section>
         </section>
+        <section id="view-admin" class="view" hidden>
+          <div class="page-heading"><div><p class="eyebrow">ACCESO RESTRINGIDO</p><h1>Administracion</h1><p>Consulta las cuentas registradas, su actividad y restablece contrasenas de forma segura.</p></div><button id="admin-refresh" class="button button-primary" type="button">Actualizar</button></div>
+          <section class="quick-grid admin-summary">
+            <article class="quick-card active-card"><span class="card-icon">A</span><div><small>CUENTAS REGISTRADAS</small><strong id="admin-user-count">0</strong><p>Docentes y administradores</p></div></article>
+            <article class="quick-card"><span class="card-icon ochre">!</span><div><small>GESTION SEGURA</small><strong>Contrasenas</strong><p>Solo se pueden restablecer; nunca se muestran.</p></div></article>
+          </section>
+          <section class="panel roster-panel admin-users-panel"><div class="table-wrap"><table class="attendance-table admin-table"><thead><tr><th>Cuenta</th><th>Correo</th><th>Rol</th><th>Clases</th><th>Sesiones</th><th>Ultima actividad</th><th>Acciones</th></tr></thead><tbody id="admin-users-body"></tbody></table></div></section>
+          <section id="admin-activity" class="panel roster-panel" hidden>
+            <div class="table-heading"><div><h3 id="admin-activity-title">Actividad</h3><p id="admin-activity-description"></p></div><button id="admin-close-activity" class="button button-outline small-button" type="button">Cerrar detalle</button></div>
+            <div class="table-wrap"><table class="attendance-table admin-activity-table"><thead><tr><th>Clase</th><th>Meet</th><th>Estado</th><th>Inicio</th><th>Finalizo</th><th>Asistencia</th></tr></thead><tbody id="admin-activity-body"></tbody></table></div>
+          </section>
+        </section>
       </main>
     </section>
     <section id="course-modal" class="modal" hidden aria-modal="true" role="dialog" aria-labelledby="course-modal-title">
@@ -135,6 +148,17 @@
         <label>Programa<input name="program" maxlength="255" placeholder="Opcional"></label>
         <label>Correo institucional<input name="institutionalEmail" maxlength="254" type="email" placeholder="Opcional"></label>
         <button id="student-submit" class="button button-primary" type="submit">Guardar estudiante</button>
+      </form>
+    </section>
+    <section id="admin-password-modal" class="modal" hidden aria-modal="true" role="dialog" aria-labelledby="admin-password-modal-title">
+      <div class="modal-backdrop" data-close-admin-password-modal></div>
+      <form id="admin-password-form" class="modal-card">
+        <button class="modal-close" type="button" data-close-admin-password-modal aria-label="Cerrar">x</button>
+        <p class="eyebrow">ADMINISTRACION</p><h2 id="admin-password-modal-title">Restablecer contrasena</h2>
+        <p id="admin-password-description"></p>
+        <label>Contrasena nueva <small>Minimo 8 caracteres</small><span class="password-field"><input name="password" type="password" minlength="8" autocomplete="new-password" required><button class="password-toggle" type="button" aria-label="Mostrar contrasena">Mostrar</button></span></label>
+        <label>Confirmar contrasena<span class="password-field"><input name="confirmation" type="password" minlength="8" autocomplete="new-password" required><button class="password-toggle" type="button" aria-label="Mostrar contrasena">Mostrar</button></span></label>
+        <button class="button button-primary" type="submit">Guardar nueva contrasena</button>
       </form>
     </section>
     <script src="/socket.io/socket.io.js"></script>

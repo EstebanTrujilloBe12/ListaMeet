@@ -9,10 +9,15 @@ CREATE TABLE IF NOT EXISTS users (
   name VARCHAR(120) NOT NULL,
   email VARCHAR(254) NOT NULL,
   password_hash VARCHAR(255) NOT NULL,
+  role ENUM('teacher', 'admin') NOT NULL DEFAULT 'teacher',
   created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   PRIMARY KEY (id),
   UNIQUE KEY uq_users_email (email)
 ) ENGINE=InnoDB;
+
+-- Tambien se aplica a instalaciones creadas antes del panel administrador.
+ALTER TABLE users
+  ADD COLUMN IF NOT EXISTS role ENUM('teacher', 'admin') NOT NULL DEFAULT 'teacher' AFTER password_hash;
 
 CREATE TABLE IF NOT EXISTS courses (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,

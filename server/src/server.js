@@ -7,7 +7,9 @@ const { config } = require("./config");
 const { pool, initializeDatabase } = require("./db");
 const { requireAuth, verifyToken } = require("./middleware/auth");
 const attendanceService = require("./services/attendance.service");
+const authService = require("./services/auth.service");
 const authRoutes = require("./routes/auth.routes");
+const adminRoutes = require("./routes/admin.routes");
 const studentsRoutes = require("./routes/students.routes");
 const coursesRoutes = require("./routes/courses.routes");
 const classesRoutes = require("./routes/classes.routes");
@@ -40,6 +42,7 @@ app.get("/health", async (req, res, next) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api", requireAuth);
+app.use("/api/admin", adminRoutes);
 app.use("/api/classes", classesRoutes);
 app.use("/api/attendance", attendanceRoutes);
 app.use("/api/students", studentsRoutes);
@@ -83,6 +86,8 @@ app.use((error, req, res, next) => {
 async function start() {
   try {
     await initializeDatabase();
+    const admin = await authService.ensureInitialAdmin(config.initialAdmin);
+    if (admin) console.log(`Administrador inicial listo: ${admin.email}`);
     server.listen(config.port, "0.0.0.0", () => {
       console.log(`Panel disponible en ${process.env.RENDER_EXTERNAL_URL || `http://localhost:${config.port}`}`);
     });

@@ -25,4 +25,10 @@ services:
       - key: MYSQL_SSL
         value: "true"
       - key: MYSQL_SSL_REJECT_UNAUTHORIZED
-        value: "true"
+        value: "false"
+      - key: ADMIN_NAME
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false

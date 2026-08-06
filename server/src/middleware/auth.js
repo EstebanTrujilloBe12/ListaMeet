@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const { config } = require("../config");
+const { pool } = require("../db");
 
 function verifyToken(token) {
   return jwt.verify(token, config.jwtSecret, { issuer: "asistencia-google-meet" });
@@ -18,4 +19,15 @@ function requireAuth(req, res, next) {
   }
 }
 
-module.exports = { requireAuth, verifyToken };
+async function requireAdmin(req, res, next) {
+  try {
+    const [rows] = await pool.execute("SELECT role FROM users WHERE id = ?", [req.user.id]);
+    if (rows[0]?.role !== "admin") return res.status(403).json({ error: "Esta acción requiere una cuenta administradora" });
+    req.user.role = "admin";
+    next();
+  } catch (error) {
+    next(error);
+  }
+}
+
+module.exports = { requireAuth, requireAdmin, verifyToken };
